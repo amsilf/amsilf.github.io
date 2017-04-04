@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      .inline { 
+        display: inline-block; 
+      }
+    </style>
+
+    <script src="lib/jquery-3.2.0.min.js"></script>
+  </head>
+  <body>
+
+    <div align="center">
+      <div>
+        <p class="inline">First sector color:</p>
+        <select class="inline" id="leftSegmentColor" onchange="updateParameters()">
+          <option selected>green</option>
+          <option>yellow</option>
+          <option>red</option>
+        </select>
+      </div>
+      
+      <div>
+        <p class="inline">Second sector color:</p>
+        <select class="inline" id="middleSegmentColor" onchange="updateParameters()">
+          <option>green</option>
+          <option selected>yellow</option>
+          <option>red</option>
+        </select>
+      </div>
+      
+      <div class="inline">
+        <p class="inline">Third sector color:</p>
+        <select class="inline" id="rightSegmentColor" onchange="updateParameters()">
+          <option>green</option>
+          <option>yellow</option>
+          <option selected>red</option>
+        </select>
+      </div>
+
+      <div>
+        <div>
+          <p class="inline">Max value:</p>
+          <input id="maxValue" class="inline" />
+        </div>
+        <div>
+          <p class="inline">Min value:</p>
+          <input id="minValue" class="inline" />
+        </div>
+      </div>
+    </div>
+
+    <div align="center">
+      <canvas id="chartCanvas" width="500" height="500"></canvas>
+    </div>
+
+    <script>
+
+      function drawSegment(canvas, context, startAngle, endAngle, color) {
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
+        ctx.closePath();
+
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle="DarkBlue";
+        ctx.stroke();
+      }
+
+      function drawArrow(canvas, ctx, arrowValueIndex) {
+        var arrowAngle = arrowValueIndex * Math.PI;
+        var toX = centerX + (radius + arrowOffsetFromArc) * Math.cos(arrowAngle);
+        var toY = centerY + (radius + arrowOffsetFromArc) * Math.sin(arrowAngle);
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(toX, toY);
+        ctx.strokeStyle = 'DarkBlue';
+        ctx.lineWidth = '5';
+        ctx.stroke();
+      }
+
+      function drawDigits(canvas, ctx, digits) {
+        var step = 0.333;
+        var angleIndex = 1.0;
+
+        digits.forEach(function(digit) {
+            var angle = angleIndex * Math.PI;
+            angleIndex += step;
+
+            var x = centerX + (radius + digitsOffsetFromArc) * Math.cos(angle);
+            var y = centerY + (radius + digitsOffsetFromArc) * Math.sin(angle);
+
+            ctx.fillStyle = 'DarkBlue';
+            ctx.font = '12px Arial'
+            ctx.textAlign = 'center';
+            ctx.textBaseline = "middle";
+            ctx.fillText(digit, x, y);
+        });
+      }
+
+      function drawDiagram() {
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawSegment(canvas, ctx, Math.PI, 4/3 * Math.PI, leftSegmentColor);
+        drawSegment(canvas, ctx, 4/3 * Math.PI, 5/3 * Math.PI, middleSegmentColor);
+        drawSegment(canvas, ctx, 5/3 * Math.PI, 2 * Math.PI, rightSegmentColor);
+
+        drawDigits(canvas, ctx, [1000, 5000, 10000, 20000]);
+
+        drawArrow(canvas, ctx, 1.4);
+      }
+
+      function updateParameters() {
+        leftSegmentColor = $("#leftSegmentColor").val();
+        middleSegmentColor = $("#middleSegmentColor").val();
+        rightSegmentColor = $("#rightSegmentColor").val();
+
+        minValue = $("#minValue").val();
+        maxValue = $("#maxValue").val();
+
+        drawDiagram();
+      }
+
+      var canvas = document.getElementById('chartCanvas');
+      var ctx = canvas.getContext('2d');
+
+      var digitsOffsetFromArc = 25;
+      var arrowOffsetFromArc = 25;
+
+      var centerX = canvas.width / 2;
+      var centerY = canvas.height / 2;
+      var radius = 200;
+
+      updateParameters();
+
+    </script>
+  </body> 
+</html>
