@@ -41,14 +41,18 @@
 
       <div>
         <div>
-          <p class="inline">Max value:</p>
-          <input id="maxValue" class="inline" />
+          <p class="inline">Min value:</p>
+          <input id="minValue" class="inline" value="10000" onchange="updateParameters()" /> 
         </div>
         <div>
-          <p class="inline">Min value:</p>
-          <input id="minValue" class="inline" />
+          <p class="inline">Max value:</p>
+          <input id="maxValue" class="inline" value="100000" onchange="updateParameters()" />
         </div>
-      </div>
+        <div>
+          <p class="inline">Actual value:</p>
+          <input id="actualValue" class="inline" value="5000" onchange="updateParameters()" />
+        </div>
+
     </div>
 
     <div align="center">
@@ -111,9 +115,20 @@
         drawSegment(canvas, ctx, 4/3 * Math.PI, 5/3 * Math.PI, middleSegmentColor);
         drawSegment(canvas, ctx, 5/3 * Math.PI, 2 * Math.PI, rightSegmentColor);
 
-        drawDigits(canvas, ctx, [1000, 5000, 10000, 20000]);
+        drawDigits(canvas, ctx, valuesArray);
 
         drawArrow(canvas, ctx, 1.4);
+      }
+
+      function calculateSegmentValues(min, max) {
+          var step = Math.round( (max - min) / 3 );
+
+          valuesArray = [];
+          
+          valuesArray.push(min);
+          valuesArray.push(Number(min)+Number(step));
+          valuesArray.push(Number(max)-Number(step));          
+          valuesArray.push(max);
       }
 
       function updateParameters() {
@@ -121,14 +136,18 @@
         middleSegmentColor = $("#middleSegmentColor").val();
         rightSegmentColor = $("#rightSegmentColor").val();
 
-        minValue = $("#minValue").val();
-        maxValue = $("#maxValue").val();
+        min = $("#minValue").val();
+        max = $("#maxValue").val();
+
+        calculateSegmentValues(min, max);
 
         drawDiagram();
       }
 
       var canvas = document.getElementById('chartCanvas');
       var ctx = canvas.getContext('2d');
+
+      var valuesArray = [];
 
       var digitsOffsetFromArc = 25;
       var arrowOffsetFromArc = 25;
