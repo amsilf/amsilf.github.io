@@ -42,11 +42,11 @@
       <div>
         <div>
           <p class="inline">Min value:</p>
-          <input id="minValue" class="inline" value="10000" onchange="updateParameters()" /> 
+          <input id="minValue" class="inline" value="0" onchange="updateParameters()" /> 
         </div>
         <div>
           <p class="inline">Max value:</p>
-          <input id="maxValue" class="inline" value="100000" onchange="updateParameters()" />
+          <input id="maxValue" class="inline" value="10000" onchange="updateParameters()" />
         </div>
         <div>
           <p class="inline">Actual value:</p>
@@ -117,7 +117,7 @@
 
         drawDigits(canvas, ctx, valuesArray);
 
-        drawArrow(canvas, ctx, 1.4);
+        drawArrow(canvas, ctx, arrowPosition);
       }
 
       function calculateSegmentValues(min, max) {
@@ -131,6 +131,19 @@
           valuesArray.push(max);
       }
 
+      function calculateArrowPosition(min, max, actualValue) {
+          var step = Math.round( (max - min) );
+          var scaledActual = actualValue / step + 1;
+
+          if (Number(actualValue) < Number(min)) {
+            arrowPosition = 1;
+          } else if (Number(actualValue) > Number(max)) {
+            arrowPosition = 2;
+          } else {
+            arrowPosition = scaledActual.toFixed(1);
+          }   
+      }
+
       function updateParameters() {
         leftSegmentColor = $("#leftSegmentColor").val();
         middleSegmentColor = $("#middleSegmentColor").val();
@@ -139,7 +152,10 @@
         min = $("#minValue").val();
         max = $("#maxValue").val();
 
+        actualValue = $("#actualValue").val();
+
         calculateSegmentValues(min, max);
+        calculateArrowPosition(min, max, actualValue);
 
         drawDiagram();
       }
@@ -148,6 +164,7 @@
       var ctx = canvas.getContext('2d');
 
       var valuesArray = [];
+      var arrowPosition = 1;
 
       var digitsOffsetFromArc = 25;
       var arrowOffsetFromArc = 25;
